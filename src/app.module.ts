@@ -1,10 +1,25 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+require("dotenv").config()
 
+import { Module } from '@nestjs/common';
+import { KnexModule } from 'nest-knexjs';
+
+console.log(process.env.DB_HOST)
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    KnexModule.forRoot({
+    config: {
+      client: "mysql",
+      version: "8.0.30",
+      useNullAsDefault: true,
+      connection: {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME
+    }
+      }
+    })
+  ],
 })
+
 export class AppModule {}
