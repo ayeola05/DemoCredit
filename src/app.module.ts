@@ -2,8 +2,9 @@ require("dotenv").config()
 
 import { Module } from '@nestjs/common';
 import { KnexModule } from 'nest-knexjs';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
-console.log(process.env.DB_HOST)
 @Module({
   imports: [
     KnexModule.forRoot({
@@ -18,7 +19,9 @@ console.log(process.env.DB_HOST)
         database: process.env.DB_NAME
     }
       }
-    })
+    }),
+    AuthModule,
+    UsersModule
   ],
 })
 
