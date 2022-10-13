@@ -28,6 +28,9 @@ export class UsersController {
 
         // Returns sucess message
         if(newUser.length >= 1) return "User Created"
+
+        //Else throws error if wallet wasn't created successfully
+        throw new BadRequestException("something went wrong")
         
     }
 
