@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { KnexModule } from 'nest-knexjs';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { UsersModule } from './users/users.module';
       }
     }),
     AuthModule,
-    UsersModule
+    UsersModule,
+    WalletModule
   ],
 })
 

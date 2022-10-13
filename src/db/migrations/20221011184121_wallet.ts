@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<void> {
     return knex.schema
         .createTable("wallet", (table) => {
             table.increments("walletId");
-            table.integer("walletBalance").notNullable()
+            table.integer("walletBalance").defaultTo(0).notNullable()
             table.timestamps(true, true);
 
             //FOREIGNK KEY TO USERS TABLE
