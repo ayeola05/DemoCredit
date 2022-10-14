@@ -1,6 +1,6 @@
 import { Controller, Post, UseGuards, Request, HttpException, HttpStatus, BadRequestException, Body, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { FundTransferDto } from './dto/FundTransfer.dto';
 import { FundWalletDto } from './dto/FundWallet.dto';
 import { WalletService } from './wallet.service';
@@ -15,31 +15,26 @@ export class WalletController {
 
     //Endpoint to create a wallet
     @Post("createWallet")
-    async createWallet(@Request() req){
+    async createWallet(@Request() req): Promise<number[]>{
         //Chack if user already created a wallet
         const userWallet =  await this.walletService.findWallet(req.user.userId)
-
+        
         //Throws error if user already has a wallet
-        if(userWallet.length === 1) throw new HttpException("user already created a wallet", HttpStatus.BAD_REQUEST)
+        if(userWallet[0]) throw new HttpException("user already created a wallet", HttpStatus.BAD_REQUEST)
         
         //Creates new wallet if user dosen't have an existing wallet
-        const newUserWallet = await this.walletService.createWallet(req.user.userId)
+        return await this.walletService.createWallet(req.user.userId)
 
-        //Returns success message if wallet was created successfully
-        if(newUserWallet.length === 1) return "Wallet Created"
-
-        //Else throws error if wallet wasn't created successfully
-        throw new BadRequestException("something went wrong")
     }
 
     //Endpoint to get a users wallet
-    @Get("getWallet")
+    @Get("findWallet")
     async findWallet(@Request() req){
         // Checks if a user has a wallet
         const userWallet =  await this.walletService.findWallet(req.user.userId)
 
         //Throws error if user dosen't have a wallet
-        if(userWallet.length !== 1 ) throw new HttpException("user dosen't have a wallet", HttpStatus.BAD_REQUEST)
+        if(!userWallet[0]) throw new HttpException("user dosen't have a wallet", HttpStatus.BAD_REQUEST)
 
         //Returns userWallet
         return userWallet
@@ -52,7 +47,7 @@ export class WalletController {
         const wallet = await this.walletService.findWallet(req.user.userId)
 
         //Throws error is wallet dosen't exist
-        if(wallet.length !== 1) throw new HttpException("user dosen't have a wallet", HttpStatus.BAD_REQUEST)
+        if(!wallet[0]) throw new HttpException("user dosen't have a wallet", HttpStatus.BAD_REQUEST)
 
         //grabbing return value
         const isCredited = await this.walletService.creditWallet(req.user.userId, fundWalletDto)

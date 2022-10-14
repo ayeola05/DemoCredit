@@ -8,12 +8,20 @@ export class UsersService {
     constructor(@InjectModel()  private readonly knex: Knex){}
     
     //Creates a user
-    async createUser(createUserDto: CreateUserDto){
-        return await this.knex.table("users").insert({...createUserDto})
+    async createUser(createUserDto: CreateUserDto): Promise<number[]>{
+        try{
+            return await this.knex.table("users").insert({...createUserDto})
+        } catch (err){
+            throw new HttpException(err, HttpStatus.BAD_REQUEST)
+        }
     }
 
     // Finds a user based on the field and the key passed
-    async findUser(field: string, key: string){
-        return await this.knex.table("users").where(field, key)
+    async findUser(field: string, key: string | number){
+        try{
+            return await this.knex.table("users").where(field, key)
+        } catch (err){
+            throw new HttpException(err, HttpStatus.BAD_REQUEST)
+        }
     }
 }
