@@ -15,7 +15,7 @@ export class WalletController {
 
     //Endpoint to create a wallet
     @Post("createWallet")
-    async createWallet(@Request() req): Promise<number[]>{
+    async createWallet(@Request() req): Promise<string>{
         //Chack if user already created a wallet
         const userWallet =  await this.walletService.findWallet(req.user.userId)
         
@@ -23,7 +23,13 @@ export class WalletController {
         if(userWallet[0]) throw new HttpException("user already created a wallet", HttpStatus.BAD_REQUEST)
         
         //Creates new wallet if user dosen't have an existing wallet
-        return await this.walletService.createWallet(req.user.userId)
+        const newWallet = await this.walletService.createWallet(req.user.userId)
+
+        console.log(newWallet)
+
+        if(newWallet[0]) return "Wallet Created"
+
+        throw new BadRequestException("Something went wrong")
 
     }
 
@@ -73,15 +79,17 @@ export class WalletController {
         const sendersWallet = await this.walletService.findWallet(req.user.userId)
 
         //Throw error if sender dosen't have a wallet
-        if(sendersWallet.length !== 1)  throw new HttpException("Sender doesn't have a wallet", HttpStatus.BAD_REQUEST)
+        if(!sendersWallet[0])  throw new HttpException("Sender doesn't have a wallet", HttpStatus.BAD_REQUEST)
 
         //Check if receipient has a wallet
         const receipient = await this.usersService.findUser("email", fundTransferDto.email)
+        
+        if(!receipient[0]) throw new HttpException("no user found", HttpStatus.BAD_REQUEST)
 
         const receipientsWallet = await this.walletService.findWallet(receipient[0].userId)
 
         //throws error if receipient dosen't have a wallet
-        if(receipientsWallet.length !== 1)  throw new HttpException("receipient doesn't have a wallet", HttpStatus.BAD_REQUEST)
+        if(!receipientsWallet[0])  throw new HttpException("receipient doesn't have a wallet", HttpStatus.BAD_REQUEST)
 
         //Checks if user has sufficient funds for the transfer
         if(fundTransferDto.amount > sendersWallet[0].walletBalance) throw new HttpException("Insufficient Balance", HttpStatus.BAD_REQUEST)

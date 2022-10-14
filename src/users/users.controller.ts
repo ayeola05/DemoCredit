@@ -12,7 +12,7 @@ export class UsersController {
 
     //Endpoint to create a user
     @Post("register")
-    async createUser(@Body() createUserDto: CreateUserDto): Promise<number[]>{
+    async createUser(@Body() createUserDto: CreateUserDto): Promise<string>{
 
         //Checks if email already exists
         const userEmail = await this.usersService.findUser("email", createUserDto.email)
@@ -24,7 +24,11 @@ export class UsersController {
         createUserDto.password = await TokenHandler.hashKey(createUserDto.password)
 
         //returns user
-        return await this.usersService.createUser(createUserDto)
+        const newUser =  await this.usersService.createUser(createUserDto)
+
+        if(newUser[0]) return "User Created"
+
+        throw new BadRequestException('something went wrong')
     }
 
     //Endpoint to get a logged in users profile based on their userId
