@@ -41,6 +41,9 @@ module.exports = {
 
   production: {
     client: 'mysql',
+    migrations: {
+      directory: "src/db/migrations"
+    },
     connection: {
       host: process.env.DB_HOST,
       database: process.env.DB_NAME,
